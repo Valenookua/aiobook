@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from aiobook.core.facebook.handler import FacebookHandler
+from aiobook.core.facebook.messenger import Messenger
 
 
 class AioBookApp:
@@ -8,9 +8,9 @@ class AioBookApp:
         self.app = web.Application()
         self.port = port
 
-    def register_messenger(self, messenger: FacebookHandler):
-        self.app.add_routes([web.get(messenger.urlpath, messenger.handle_get),
-                             web.post(messenger.urlpath, messenger.handle_post)])
+    def register_messenger(self, messenger: Messenger):
+        self.app.add_routes([web.get(messenger.urlpath, messenger.handler.handle_get),
+                             web.post(messenger.urlpath, messenger.handler.handle_post)])
 
     def register_handler(self, type_request, urlpath, func):
         if type_request == 'get':

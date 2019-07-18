@@ -3,7 +3,7 @@ import warnings
 
 from aiohttp import web
 
-from aiobook.core.facebook.events import *
+from aiobook.core.facebook.handler.events import *
 
 
 class WebhookHandlerWarning(UserWarning):
@@ -11,11 +11,9 @@ class WebhookHandlerWarning(UserWarning):
 
 
 class FacebookHandler(object):
-    def __init__(self, page_access_token, verify_token, urlpath="", **kwargs):
+    def __init__(self, page_access_token, verify_token, **kwargs):
         self.page_access_token = page_access_token
         self.verify_token = verify_token
-        self.urlpath = urlpath
-        self._api_ver = kwargs.pop('api_ver', 'v3.3')
         self.skip_confirm_execution = kwargs.pop('skip_confirm_execution', False)
 
     _webhook_handlers = {}
@@ -35,11 +33,18 @@ class FacebookHandler(object):
         if raw_request.get("object") != "page":
             response = web.Response(text="Unsupported request", status=403)
         else:
-            if self.skip_confirm_execution:
-                asyncio.create_task(self.handle_webhook(raw_request['entry'][0]))
-                response = web.Response(text="OK", status=200)
+            if raw_request['entry']:
+                for entry in raw_request['entry']:
+                    if self.skip_confirm_execution:
+                        asyncio.create_task(self.handle_webhook(entry))
+                        response = web.Response(text="OK", status=200)
+                    else:
+                        response = await self.handle_webhook(entry)
             else:
-                response = await self.handle_webhook(raw_request['entry'][0])
+                warnings.warn(f"Can't handle request: missed field \"entry\"",
+                              WebhookHandlerWarning)
+                response = web.Response(text="Unsupported request", status=403)
+
         return response
 
     @staticmethod
@@ -79,12 +84,15 @@ class FacebookHandler(object):
             event = OptinEvent.from_json(message)
         elif "standby" in message.keys():
             event = StandByEvent.from_json(message)
-
+        else:
+            warnings.warn(f"Got unknown event", WebhookHandlerWarning)
+            event = Event.from_json(message)
         return event
 
     async def handle_webhook(self, body):
         if "messaging" in body.keys():
             for message in body['messaging']:
+                print("got by webhook ", message)
                 event = self.event_create(message)
                 await self._call_handler(event.name, event)
         elif "standby" in body.keys():

@@ -83,15 +83,18 @@ class PostbackEvent(Event):
 
 
 class DeliveryEvent(Event):
-    def __init__(self, mids, watermark, **kwargs):
+    def __init__(self, delivery, **kwargs):
         super(DeliveryEvent, self).__init__(**kwargs)
         self.name = "delivery"
-        self.mids = mids
-        self.watermark = watermark
+        self.delivery = delivery
 
-    @classmethod
-    def from_json(cls, json_dict):
-        return cls(**json_dict)
+    @property
+    def mids(self):
+        return self.delivery.get("mids")
+
+    @property
+    def watermark(self):
+        return self.delivery.get("watermark")
 
 
 class ReadEvent(Event):
