@@ -17,6 +17,12 @@ class FacebookHandler(object):
         self.skip_confirm_execution = kwargs.pop('skip_confirm_execution', False)
 
     _webhook_handlers = {}
+    _webhook_endpoints = ("before_handle", "after_handle", "echo", "message", "postback",
+                          "delivery", "read", "pass_thread_control", "take_thread_control",
+                          "request_thread_control",
+                          "account_linking", "referral", "game_play", "app_roles",
+                          "policy_enforcement",
+                          "checkout_update", "payment", "optin", "stand_by")
 
     async def handle_get(self, request):
         """"""
@@ -92,9 +98,16 @@ class FacebookHandler(object):
     async def handle_webhook(self, body):
         if "messaging" in body.keys():
             for message in body['messaging']:
-                print("got by webhook ", message)
                 event = self.event_create(message)
+
+                if self._webhook_handlers.get('before_handle'):
+                    await self._call_handler(event.name, event)
+
                 await self._call_handler(event.name, event)
+
+                if self._webhook_handlers.get('after_handle'):
+                    await self._call_handler(event.name, event)
+
         elif "standby" in body.keys():
             for message in body['standby']:
                 event = self.event_create(message)
@@ -110,6 +123,21 @@ class FacebookHandler(object):
             warnings.warn(f"There are not \"{name}\" handler defined! Call skipped",
                           WebhookHandlerWarning)
 
+    def get_defined_handlers(self):
+        return list(self._webhook_handlers.keys())
+
+    def set_webhook_handler(self, name, func):
+        if name not in self._webhook_endpoints:
+            warnings.warn(f"The handler \"{name}\" call will never happen.",
+                          WebhookHandlerWarning)
+        self._webhook_handlers[name] = func
+
+    def before_handle(self, func):
+        self._webhook_handlers["before_handle"] = func
+
+    def after_handle(self, func):
+        self._webhook_handlers["after_handle"] = func
+
     def handle_echo(self, func):
         self._webhook_handlers["echo"] = func
 
@@ -120,7 +148,7 @@ class FacebookHandler(object):
         self._webhook_handlers["postback"] = func
 
     def handle_delivery(self, func):
-        self._webhook_handlers["delivery'"] = func
+        self._webhook_handlers["delivery"] = func
 
     def handle_read(self, func):
         self._webhook_handlers["read"] = func
@@ -159,4 +187,4 @@ class FacebookHandler(object):
         self._webhook_handlers["optin"] = func
 
     def handle_standby(self, func):
-        self._webhook_handlers["optin"] = func
+        self._webhook_handlers["stand_by"] = func

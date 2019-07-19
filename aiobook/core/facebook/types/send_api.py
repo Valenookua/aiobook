@@ -34,7 +34,7 @@ class Attachment(object):
         self.payload = payload
 
 
-class Response(object):
+class Payload(object):
     def __init__(self, messaging_type,
                  recipient: Recipient,
                  message: Message or None,

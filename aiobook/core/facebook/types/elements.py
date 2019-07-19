@@ -2,18 +2,21 @@ import json
 
 
 class Element(object):
-    def __init__(self, title, image_url, subtitle, default_action, buttons):
+    def __init__(self, title, image_url=None, subtitle=None, default_action=None, buttons=None):
         if not title:
             raise ValueError("Title must be specified")
         else:
             self.title = title
-
-        self.image_url = image_url
-        self.subtitle = subtitle
-        self.default_action = default_action
-        self.buttons = buttons
-        if len(self.buttons) > 3:
-            raise ValueError("Element support only 3 buttons")
+        if image_url:
+            self.image_url = image_url
+        if subtitle:
+            self.subtitle = subtitle
+        if default_action:
+            self.default_action = default_action
+        if buttons:
+            self.buttons = buttons
+            if len(self.buttons) > 3:
+                raise ValueError("Element support only 3 buttons")
 
     def to_json(self):
         return json.dumps(self, default=lambda i: i.__dict__)
