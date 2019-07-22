@@ -49,14 +49,15 @@ class PostbackButton(Button):
 
 
 class UrlButton(Button):
-    def __init__(self, url, title,
+    def __init__(self, url, title=None,
                  webview_height_ratio=None,
                  messenger_extensions=None,
                  fallback_url=None,
                  webview_share_button=None):
         super(UrlButton, self).__init__("web_url")
         self.url = url
-        self.title = title
+        if title:
+            self.title = title
         if webview_height_ratio != "compact" \
                 or webview_height_ratio != "tall"\
                 or webview_height_ratio != "full"\

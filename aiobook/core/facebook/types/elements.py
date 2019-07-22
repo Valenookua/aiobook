@@ -3,6 +3,13 @@ import json
 
 class Element(object):
     def __init__(self, title, image_url=None, subtitle=None, default_action=None, buttons=None):
+        """
+        :param title:
+        :param image_url:
+        :param subtitle:
+        :param default_action:
+        :param buttons:
+        """
         if not title:
             raise ValueError("Title must be specified")
         else:
@@ -24,12 +31,22 @@ class Element(object):
 
 class OpenGraphElement(object):
     def __init__(self, url, buttons):
+        """
+        :param url:
+        :param buttons:
+        """
         self.url = url
         self.buttons = buttons
 
 
 class MediaElement(object):
-    def __init__(self, media_type, attachment_id, url, buttons):
+    def __init__(self, media_type, attachment_id=None, url=None, buttons=None):
+        """
+        :param media_type:
+        :param attachment_id:
+        :param url:
+        :param buttons:
+        """
         self.media_type = media_type
         if attachment_id and url:
             raise ValueError("Only one of the attachment_id or url must be specified")

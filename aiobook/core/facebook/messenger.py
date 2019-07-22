@@ -81,9 +81,7 @@ class Messenger(object):
 
     async def set_persistent_menu(self, persistent_menu):
         raise NotImplementedError
-        # data = PersistentMenu(persistent_menu=persistent_menu).to_json()
-        # await self._api_call_post(self.get_url(f"me/messages?access_token"
-        #                                        f"={self.page_access_token}"), data)
+
 
     async def typing_on(self, recipient_id):
         data = Payload(recipient=Recipient(id_=recipient_id),

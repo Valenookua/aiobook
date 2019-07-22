@@ -12,6 +12,11 @@ class WebhookHandlerWarning(UserWarning):
 
 class FacebookHandler(object):
     def __init__(self, page_access_token, verify_token, **kwargs):
+        """
+        :param page_access_token:
+        :param verify_token:
+        :param kwargs:
+        """
         self.page_access_token = page_access_token
         self.verify_token = verify_token
         self.skip_confirm_execution = kwargs.pop('skip_confirm_execution', False)
@@ -25,7 +30,10 @@ class FacebookHandler(object):
                           "checkout_update", "payment", "optin", "stand_by")
 
     async def handle_get(self, request):
-        """"""
+        """
+        :param request:
+        :return:
+        """
         args = request.rel_url.query
         if args.get('hub.mode') == 'subscribe' and args.get('hub.challenge'):
             if not args.get('hub.verify_token') == self.verify_token:
@@ -34,7 +42,10 @@ class FacebookHandler(object):
         return web.Response(text='OK', status=200)
 
     async def handle_post(self, request):
-        """"""
+        """
+        :param request:
+        :return:
+        """
         raw_request = await request.json()
         if raw_request.get("object") != "page":
             response = web.Response(text="Unsupported request", status=403)
@@ -42,10 +53,10 @@ class FacebookHandler(object):
             if raw_request['entry']:
                 for entry in raw_request['entry']:
                     if self.skip_confirm_execution:
-                        asyncio.create_task(self.handle_webhook(entry))
+                        asyncio.create_task(self._handle_webhook(entry))
                         response = web.Response(text="OK", status=200)
                     else:
-                        response = await self.handle_webhook(entry)
+                        response = await self._handle_webhook(entry)
             else:
                 warnings.warn(f"Can't handle request: missed field \"entry\"",
                               WebhookHandlerWarning)
@@ -54,7 +65,7 @@ class FacebookHandler(object):
         return response
 
     @staticmethod
-    def event_create(message):
+    def _event_create(message):
         if "message" in message.keys():
             if message["message"].get("is_echo"):
                 event = EchoEvent.from_json(message)
@@ -95,10 +106,10 @@ class FacebookHandler(object):
             event = Event.from_json(message)
         return event
 
-    async def handle_webhook(self, body):
+    async def _handle_webhook(self, body):
         if "messaging" in body.keys():
             for message in body['messaging']:
-                event = self.event_create(message)
+                event = self._event_create(message)
 
                 if self._webhook_handlers.get('before_handle'):
                     await self._call_handler(event.name, event)
@@ -110,7 +121,7 @@ class FacebookHandler(object):
 
         elif "standby" in body.keys():
             for message in body['standby']:
-                event = self.event_create(message)
+                event = self._event_create(message)
                 await self._call_handler(event.name, event)
 
         response = web.Response(text="OK", status=200)
@@ -133,58 +144,134 @@ class FacebookHandler(object):
         self._webhook_handlers[name] = func
 
     def before_handle(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["before_handle"] = func
 
     def after_handle(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["after_handle"] = func
 
     def handle_echo(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["echo"] = func
 
     def handle_message(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["message"] = func
 
     def handle_postback(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["postback"] = func
 
     def handle_delivery(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["delivery"] = func
 
     def handle_read(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["read"] = func
 
     def handle_pass_thread_control(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["pass_thread_control"] = func
 
     def handle_take_thread_control(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["take_thread_control"] = func
 
     def handle_request_thread_control(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["request_thread_control"] = func
 
     def handle_account_linking(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["account_linking"] = func
 
     def handle_referral(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["referral"] = func
 
     def handle_game_play(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["game_play"] = func
 
     def handle_app_roles(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["app_roles"] = func
 
     def handle_policy_enforcement(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["policy_enforcement"] = func
 
     def handle_checkout_update(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["checkout_update"] = func
 
     def handle_payment(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["payment"] = func
 
     def handle_optin(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["optin"] = func
 
     def handle_standby(self, func):
+        """
+        :param func:
+        :return:
+        """
         self._webhook_handlers["stand_by"] = func
