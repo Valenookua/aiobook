@@ -1,3 +1,6 @@
 /.idea/
+/dist
+build/
+aiobook.egg-info/
 *.pyc
 test.py

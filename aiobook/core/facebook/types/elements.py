@@ -21,6 +21,8 @@ class Element(object):
         if default_action:
             self.default_action = default_action
         if buttons:
+            if not isinstance(buttons, list):
+                raise ValueError(f"buttons must be a list, got {type(buttons)}")
             self.buttons = buttons
             if len(self.buttons) > 3:
                 raise ValueError("Element support only 3 buttons")
@@ -36,6 +38,8 @@ class OpenGraphElement(object):
         :param buttons:
         """
         self.url = url
+        if not isinstance(buttons, list):
+            raise ValueError(f"buttons must be a list, got {type(buttons)}")
         self.buttons = buttons
 
 
@@ -56,6 +60,9 @@ class MediaElement(object):
             self.attachment_id = attachment_id
         else:
             self.url = url
-        self.buttons = buttons
-        if len(self.buttons) > 1:
-            raise ValueError("MediaElement support only 1 buttons")
+        if buttons:
+            if not isinstance(buttons, list):
+                raise ValueError(f"buttons must be a list, got {type(buttons)}")
+            self.buttons = buttons
+            if len(self.buttons) > 1:
+                raise ValueError("MediaElement support only 1 buttons")

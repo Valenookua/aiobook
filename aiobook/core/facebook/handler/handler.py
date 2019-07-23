@@ -135,9 +135,23 @@ class FacebookHandler(object):
                           WebhookHandlerWarning)
 
     def get_defined_handlers(self):
+        """
+        :return:
+        """
         return list(self._webhook_handlers.keys())
 
+    def get_allowed_handlers(self):
+        """
+        :return:
+        """
+        return list(self._webhook_endpoints.keys())
+
     def set_webhook_handler(self, name, func):
+        """
+        :param name:
+        :param func:
+        :return:
+        """
         if name not in self._webhook_endpoints:
             warnings.warn(f"The handler \"{name}\" call will never happen.",
                           WebhookHandlerWarning)

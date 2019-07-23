@@ -7,6 +7,7 @@ import aiohttp
 from .handler import FacebookHandler
 
 from .types.send_api import Payload, Recipient, Message, Attachment, PersistentMenu
+from .types.templates import Template
 
 
 class MessengerWarning(UserWarning):
@@ -54,11 +55,19 @@ class Messenger(object):
             return response
 
     async def get_user_profile(self, psid, fields=("first_name", "last_name")):
+        """
+        :param psid:
+        :param fields:
+        :return:
+        """
         params = {"fields": f"{','.join(fields)}", "access_token": self.page_access_token}
         response = await self._api_call_get(self._get_url(f"{psid}"), params)
         return response
 
     async def get_page_info(self):
+        """
+        :return:
+        """
         params = {"access_token": self.page_access_token}
         response = await self._api_call_get(self._get_url(f"me"), params)
         return response
@@ -66,6 +75,19 @@ class Messenger(object):
     async def send(self, recipient_id, message, quick_replies=None,
                    messaging_type=None, metadata=None, notification_type=None,
                    tag=None):
+        """
+        :param recipient_id:
+        :param message:
+        :param quick_replies:
+        :param messaging_type:
+        :param metadata:
+        :param notification_type:
+        :param tag:
+        :return:
+        """
+        if isinstance(message, str) or isinstance(message, Template):
+            raise ValueError(f"Message must be str or Template, got {type(message)}")
+
         text = message if isinstance(message, str) else None
         attachment = Attachment("template", message) if not text else None
         data = Payload(recipient=Recipient(id_=recipient_id),
@@ -80,10 +102,18 @@ class Messenger(object):
                                                 f"={self.page_access_token}"), data)
 
     async def set_persistent_menu(self, persistent_menu):
+        """
+        :param persistent_menu:
+        :return:
+        """
         raise NotImplementedError
 
 
     async def typing_on(self, recipient_id):
+        """
+        :param recipient_id:
+        :return:
+        """
         data = Payload(recipient=Recipient(id_=recipient_id),
                        messaging_type=None,
                        message=None,
@@ -92,6 +122,10 @@ class Messenger(object):
                                                 f"={self.page_access_token}"), data)
 
     async def typing_off(self, recipient_id):
+        """
+        :param recipient_id:
+        :return:
+        """
         data = Payload(recipient=Recipient(id_=recipient_id),
                        messaging_type=None,
                        message=None,
@@ -100,6 +134,10 @@ class Messenger(object):
                                                 f"={self.page_access_token}"), data)
 
     async def mark_seen(self, recipient_id):
+        """
+        :param recipient_id:
+        :return:
+        """
         data = Payload(recipient=Recipient(id_=recipient_id),
                        messaging_type=None,
                        message=None,
@@ -108,6 +146,10 @@ class Messenger(object):
                                                 f"={self.page_access_token}"), data)
 
     def imitate_typing(self, time_to_sleep=0):
+        """
+        :param time_to_sleep:
+        :return:
+        """
         def decorator(func):
             async def wrapper(event, *args, **kwargs):
                 await self.mark_seen(event.sender_id)

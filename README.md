@@ -1,6 +1,6 @@
 # AioBook
 
-AioBook it iss async framework for build messenger application in facebook
+AioBook it is async framework for build messenger application in facebook
 
 ## Installation
 
@@ -38,6 +38,22 @@ async def handle_postback(event):
 
 handler.set_webhook_handler("message", handle_message)
 handler.set_webhook_handler("postback", handle_postback)
+```
+To get list allowed and defined handlers:
+```python
+handler.get_allowed_handlers()
+handler.get_defined_handlers()
+```
+Also you can set handler before_handle, and after_handle. It will be called before(or after) handle_event:
+```python
+@handler.before_handle
+async def log_message(event):
+    logging.info("{} handled.".format(event.name))
+
+@handler.before_handle
+async def log_message(event):
+    logging.info("{} handled.".format(event.name))
+
 ```
 
 To receive message you need register handler in HTTP Server:
