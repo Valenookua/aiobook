@@ -150,7 +150,7 @@ Sender action to turn typing indicators on
 ```python
 await messenger.typing_on(event.sender_id)
 ```
-####messenger.typing_off
+#### messenger.typing_off
 Sender action to turn typing indicators off
 ```python
 await messenger.typing_off(event.sender_id)
