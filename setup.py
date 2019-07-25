@@ -24,7 +24,7 @@ def get_requirements():
 setuptools.setup(
      name='aiobook',
      version=get_version(),
-     packages=['aiobook'],
+     packages=setuptools.find_packages(),
      author="Valentyn Vaityshyn",
      author_email="valenook.ua@gmail.com",
      requires_python=">=3.7",

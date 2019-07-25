@@ -85,7 +85,7 @@ class Messenger(object):
         :param tag:
         :return:
         """
-        if isinstance(message, str) or isinstance(message, Template):
+        if not isinstance(message, str) and not isinstance(message, Template):
             raise ValueError(f"Message must be str or Template, got {type(message)}")
 
         text = message if isinstance(message, str) else None
@@ -107,7 +107,6 @@ class Messenger(object):
         :return:
         """
         raise NotImplementedError
-
 
     async def typing_on(self, recipient_id):
         """
