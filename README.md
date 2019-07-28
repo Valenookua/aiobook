@@ -50,7 +50,7 @@ Also you can set handler before_handle, and after_handle. It will be called befo
 async def log_message(event):
     logging.info("{} handled.".format(event.name))
 
-@handler.before_handle
+@handler.after_handle
 async def log_message(event):
     logging.info("{} handled.".format(event.name))
 
