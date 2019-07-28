@@ -1,2 +1,1 @@
-setuptools>=40.6.2
 aiohttp>=3.5.4

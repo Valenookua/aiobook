@@ -21,19 +21,26 @@ def get_requirements():
     return [str(ir.req) for ir in install_reqs]
 
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+
 setuptools.setup(
      name='aiobook',
      version=get_version(),
      packages=setuptools.find_packages(),
      author="Valentyn Vaityshyn",
      author_email="valenook.ua@gmail.com",
-     requires_python=">=3.7",
+     requires_python=">=3.6",
      description="Async framework for build messenger application in facebook",
+     long_description=long_description,
+     long_description_content_type="text/markdown",
      url="https://github.com/Valenookua/aiobook",
      install_requires=get_requirements(),
      classifiers=[
          "Programming Language :: Python :: 3",
          "License :: OSI Approved :: MIT License",
+         "Development Status :: 2 - Pre-Alpha",
          "Operating System :: OS Independent",
          "Topic :: Software Development :: Libraries :: Application Frameworks",
      ],)

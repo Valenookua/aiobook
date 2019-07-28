@@ -138,13 +138,13 @@ class FacebookHandler(object):
         """
         :return:
         """
-        return list(self._webhook_handlers.keys())
+        return tuple(self._webhook_handlers.keys())
 
     def get_allowed_handlers(self):
         """
         :return:
         """
-        return list(self._webhook_endpoints.keys())
+        return self._webhook_endpoints
 
     def set_webhook_handler(self, name, func):
         """
